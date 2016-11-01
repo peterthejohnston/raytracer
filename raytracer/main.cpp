@@ -16,76 +16,53 @@
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 // Here is a small helper for you! Have a look.
 #include "ResourcePath.hpp"
 
 int main(int, char const**)
 {
-    // Create the main window
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
-
-    // Set the Icon
-    sf::Image icon;
-    if (!icon.loadFromFile(resourcePath() + "icon.png")) {
-        return EXIT_FAILURE;
-    }
-    window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-
-    // Load a sprite to display
-    sf::Texture texture;
-    if (!texture.loadFromFile(resourcePath() + "cute_image.jpg")) {
-        return EXIT_FAILURE;
-    }
-    sf::Sprite sprite(texture);
-
-    // Create a graphical text to display
-    sf::Font font;
-    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
-        return EXIT_FAILURE;
-    }
-    sf::Text text("Hello SFML", font, 50);
-    text.setFillColor(sf::Color::Black);
-
-    // Load a music to play
-    sf::Music music;
-    if (!music.openFromFile(resourcePath() + "nice_music.ogg")) {
-        return EXIT_FAILURE;
-    }
-
-    // Play the music
-    music.play();
-
-    // Start the game loop
-    while (window.isOpen())
-    {
-        // Process events
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            // Close window: exit
-            if (event.type == sf::Event::Closed) {
-                window.close();
+    std::cout << "hello, sfml";
+    return 0;
+    
+    /*
+    for (int j = 0; j < imageHeight; ++j) {
+        for (int i = 0; i < imageWidth; ++i) {
+            // compute primary ray direction
+            Ray primRay;
+            computePrimRay(i, j, &primRay);
+            // shoot prim ray in the scene and search for intersection
+            Point pHit;
+            Normal nHit;
+            float minDist = INFINITY;
+            Object object = NULL;
+            for (int k = 0; k < objects.size(); ++k) {
+                if (Intersect(objects[k], primRay, &pHit, &nHit)) {
+                    float distance = Distance(eyePosition, pHit);
+                    if (distance < minDistance) {
+                        object = objects[k];
+                        minDistance = distance; // update min distance
+                    }
+                }
             }
-
-            // Escape pressed: exit
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-                window.close();
+            if (object != NULL) {
+                // compute illumination
+                Ray shadowRay;
+                shadowRay.direction = lightPosition - pHit;
+                bool isShadow = false;
+                for (int k = 0; k < objects.size(); ++k) {
+                    if (Intersect(objects[k], shadowRay)) {
+                        isInShadow = true;
+                        break;
+                    }
+                }
             }
-        }
-
-        // Clear screen
-        window.clear();
-
-        // Draw the sprite
-        window.draw(sprite);
-
-        // Draw the string
-        window.draw(text);
-
-        // Update the window
-        window.display();
+            if (!isInShadow)
+                pixels[i][j] = object->color * light.brightness; 
+            else 
+                pixels[i][j] = 0;
+        } 
     }
-
-    return EXIT_SUCCESS;
+     */
 }

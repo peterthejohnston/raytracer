@@ -1,31 +1,63 @@
-
-//
-// Disclaimer:
-// ----------
-//
-// This code will work only if you selected window, graphics and audio.
-//
-// Note that the "Run Script" build phase will copy the required frameworks
-// or dylibs to your application bundle so you can execute it on any OS X
-// computer.
-//
-// Your resource files (images, sounds, fonts, ...) are also copied to your
-// application bundle. To get the path to these resources, use the helper
-// function `resourcePath()` from ResourcePath.hpp
-//
-
-#include <SFML/Audio.hpp>
-#include <SFML/Graphics.hpp>
+// #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <fstream>
+#include "lodepng.h"
+// #include "ResourcePath.hpp"
+using namespace std;
 
-// Here is a small helper for you! Have a look.
-#include "ResourcePath.hpp"
+template<typename T>
+class Vector3 {
+public:
+    T x, y, z;
+};
+
+typedef Vector3<float> Vector3f;
+
+class Sphere {
+    Vector3f center;
+    float radius;
+    Vector3f color;
+};
+
+Vector3f trace() {
+    
+}
+
+void render() {
+    
+}
 
 int main(int, char const**)
 {
-    std::cout << "hello, sfml";
-    return 0;
+    cout << "hello, sfml" << endl;
     
+    int width = 200;
+    int height = 200;
+    std::vector<unsigned char> image;
+    for (int row = 0; row < width; row++) {
+        for (int col = 0; col < height; col++) {
+            if (col % 10 < 5 || row % 10 < 5) {
+                image.push_back((unsigned char)0); // r
+                image.push_back((unsigned char)0); // g
+                image.push_back((unsigned char)0); // b
+                image.push_back((unsigned char)255); // a
+            }
+            else {
+                image.push_back((unsigned char)255); // r
+                image.push_back((unsigned char)255); // g
+                image.push_back((unsigned char)255); // b
+                image.push_back((unsigned char)255); // a
+            }
+        }
+    }
+
+    unsigned error = lodepng::encode("img.png", image, width, height);
+    
+    // if there's an error, display it
+    if(error) std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
+    
+    return 0;
+
     /*
     for (int j = 0; j < imageHeight; ++j) {
         for (int i = 0; i < imageWidth; ++i) {

@@ -1,2 +1,12 @@
 *.xcscheme
 *.pbxproj
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+raytracer.xcworkspace/
+xcuserdata/
+
+*.bmp
+*.png

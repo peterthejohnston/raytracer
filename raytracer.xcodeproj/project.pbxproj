@@ -9,10 +9,6 @@
 /* Begin PBXBuildFile section */
 		D01367151DC8565C00D2A507 /* ResourcePath.mm in Sources */ = {isa = PBXBuildFile; fileRef = D01367141DC8565C00D2A507 /* ResourcePath.mm */; };
 		D01367181DC8565C00D2A507 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D01367171DC8565C00D2A507 /* main.cpp */; };
-		D013671B1DC8565C00D2A507 /* cute_image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D013671A1DC8565C00D2A507 /* cute_image.jpg */; };
-		D013671D1DC8565C00D2A507 /* nice_music.ogg in Resources */ = {isa = PBXBuildFile; fileRef = D013671C1DC8565C00D2A507 /* nice_music.ogg */; };
-		D013671F1DC8565C00D2A507 /* sansation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D013671E1DC8565C00D2A507 /* sansation.ttf */; };
-		D01367211DC8565C00D2A507 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = D01367201DC8565C00D2A507 /* icon.png */; };
 		D01D6DDA1DC9676F003A2A77 /* lodepng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D01D6DD91DC9676F003A2A77 /* lodepng.cpp */; };
 		D04F8C561DC91593007DA837 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = D04F8C551DC91593007DA837 /* .gitignore */; };
 /* End PBXBuildFile section */
@@ -23,10 +19,6 @@
 		D01367141DC8565C00D2A507 /* ResourcePath.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourcePath.mm; sourceTree = "<group>"; };
 		D01367161DC8565C00D2A507 /* ResourcePath.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ResourcePath.hpp; sourceTree = "<group>"; };
 		D01367171DC8565C00D2A507 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		D013671A1DC8565C00D2A507 /* cute_image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = cute_image.jpg; sourceTree = "<group>"; };
-		D013671C1DC8565C00D2A507 /* nice_music.ogg */ = {isa = PBXFileReference; lastKnownFileType = file; path = nice_music.ogg; sourceTree = "<group>"; };
-		D013671E1DC8565C00D2A507 /* sansation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = sansation.ttf; sourceTree = "<group>"; };
-		D01367201DC8565C00D2A507 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		D01D6DD81DC96715003A2A77 /* lodepng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lodepng.h; sourceTree = "<group>"; };
 		D01D6DD91DC9676F003A2A77 /* lodepng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lodepng.cpp; sourceTree = "<group>"; };
 		D04F8C551DC91593007DA837 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = SOURCE_ROOT; };
@@ -85,10 +77,6 @@
 		D01367191DC8565C00D2A507 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D013671A1DC8565C00D2A507 /* cute_image.jpg */,
-				D013671C1DC8565C00D2A507 /* nice_music.ogg */,
-				D013671E1DC8565C00D2A507 /* sansation.ttf */,
-				D01367201DC8565C00D2A507 /* icon.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -152,10 +140,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D04F8C561DC91593007DA837 /* .gitignore in Resources */,
-				D01367211DC8565C00D2A507 /* icon.png in Resources */,
-				D013671F1DC8565C00D2A507 /* sansation.ttf in Resources */,
-				D013671D1DC8565C00D2A507 /* nice_music.ogg in Resources */,
-				D013671B1DC8565C00D2A507 /* cute_image.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -101,9 +101,8 @@ void render(vector<Sphere> &spheres, int width, int height, vector<unsigned char
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             // construct primary ray
-            Vector3f prim_ray_orig = Vector3f(0);
-            Vector3f prim_ray_dir = Vector3f(col, row, -1) - prim_ray_orig;
-            prim_ray_dir.normalize();
+            Vector3f prim_ray_orig = Vector3f(col, row, 0);
+            Vector3f prim_ray_dir = Vector3f(0, 0, 1);
             
             // cast the ray and trace it back and loop thru all the objects
             float min_dist = INFINITY;
@@ -127,14 +126,14 @@ void render(vector<Sphere> &spheres, int width, int height, vector<unsigned char
                 image[row * width * 4 + col * 4 + 3] = 255; // a
             }
             else {
-                Vector3f hit_point = prim_ray_orig + prim_ray_dir * t;
+                Vector3f hit_point = prim_ray_orig + prim_ray_dir * min_dist;
                 Vector3f hit_normal = hit_point - sphere->center;
                 hit_normal.normalize();
                 
                 Vector3f light = Vector3f(-100, -100, 0);
                 float light_dist = (light - hit_point).magnitude();
                 float light_dist2 = light_dist * light_dist;
-                float brightness = 10000000 / light_dist2;
+                float brightness = max((float)1, 10000000 / light_dist2);
                 
                 // figure out if there's a shadow
                 
@@ -152,7 +151,7 @@ int main()
 {
     // fill up list with random spheres
     vector<Sphere> spheres;
-    /* int num_spheres = 20;
+    int num_spheres = 20;
     srand(time(NULL));
     for (int i = 0; i < num_spheres; i++) {
         float x = rand() % 1000;
@@ -160,8 +159,7 @@ int main()
         float z = rand() % 1000;
         float radius = rand() % 100 + 10;
         spheres.push_back(Sphere(Vector3f(x, y, z), radius, Vector3f(178, 166, 255)));
-    } */
-    spheres.push_back(Sphere(Vector3f(100, 100, -3), 10, Vector3f(255, 0, 0)));
+    }
     
     // render them
     int width = 800;

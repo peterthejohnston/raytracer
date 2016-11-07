@@ -68,9 +68,9 @@ class Sphere {
 public:
     Vector3f center;
     float radius;
-    Vector3f color;
+    Vector3<uint8_t> color;
     
-    Sphere(Vector3f center, float radius, Vector3f color):
+    Sphere(Vector3f center, float radius, Vector3<uint8_t> color):
         center(center), radius(radius), color(color) {}
     
     bool intersect(Vector3f origin, Vector3f dir, float &t) {
@@ -126,22 +126,47 @@ void render(vector<Sphere> &spheres, int width, int height, vector<unsigned char
                 image[row * width * 4 + col * 4 + 3] = 255; // a
             }
             else {
+                uint8_t r = sphere->color.x;
+                uint8_t g = sphere->color.y;
+                uint8_t b = sphere->color.z;
+                uint8_t a = 255;
+                
+                // set brightness
                 Vector3f hit_point = prim_ray_orig + prim_ray_dir * min_dist;
+                Vector3f light = Vector3f(-100, -100, 0);
                 Vector3f hit_normal = hit_point - sphere->center;
                 hit_normal.normalize();
-                
-                Vector3f light = Vector3f(-100, -100, 0);
-                float light_dist = (light - hit_point).magnitude();
-                float light_dist2 = light_dist * light_dist;
-                float brightness = max((float)1, 10000000 / light_dist2);
+                Vector3f light_to_hit = hit_point - light;
+                light_to_hit.normalize();
+                float angle = acos(light_to_hit.dot(hit_normal));
+                float brightness = angle / M_PI;
+                r = min((uint8_t)((float)r * brightness), (uint8_t)255);
+                g = min((uint8_t)((float)g * brightness), (uint8_t)255);
+                b = min((uint8_t)((float)b * brightness), (uint8_t)255);
                 
                 // figure out if there's a shadow
+                // trace shadow ray
+                /*
+                Vector3f light_dir = light - hit_point;
+                float d = 0;
+                for (int i = 0; i < spheres.size(); i++) {
+                    // test for intersection
+                    if (spheres[i].intersect(hit_point, light_dir, d)) {
+                        r = 0;
+                        g = 0;
+                        b = 0;
+                        break;
+                    }
+                }
+                */
+                
+                // reflection
                 
                 // add to image[]
-                image[row * width * 4 + col * 4] = sphere->color.x * brightness; // r
-                image[row * width * 4 + col * 4 + 1] = sphere->color.y * brightness; // g
-                image[row * width * 4 + col * 4 + 2] = sphere->color.z * brightness; // b
-                image[row * width * 4 + col * 4 + 3] = 255; // a
+                image[row * width * 4 + col * 4] = r;
+                image[row * width * 4 + col * 4 + 1] = g;
+                image[row * width * 4 + col * 4 + 2] = b;
+                image[row * width * 4 + col * 4 + 3] = a;
             }
         }
     }
@@ -157,8 +182,11 @@ int main()
         float x = rand() % 1000;
         float y = rand() % 1000;
         float z = rand() % 1000;
-        float radius = rand() % 100 + 10;
-        spheres.push_back(Sphere(Vector3f(x, y, z), radius, Vector3f(178, 166, 255)));
+        float radius = rand() % 100 + 20;
+        uint8_t r = rand() % 255;
+        uint8_t g = rand() % 255;
+        uint8_t b = rand() % 255;
+        spheres.push_back(Sphere(Vector3f(x, y, z), radius, Vector3<uint8_t>(r, g, b)));
     }
     
     // render them

@@ -23,12 +23,27 @@ public:
     Vector3<T> operator * (const T &f) const {
         return Vector3<T>(x * f, y * f, z * f);
     }
+    Vector3<T>& operator *= (const T &f) {
+        x *= f, y *= f, z *= f; return *this;
+    }
+    T magnitude() const {
+        return sqrt(x * x + y * y + z * z);
+    }
     T dot(const Vector3<T> &v) const {
         return x * v.x + y * v.y + z * v.z;
     }
+    Vector3<T>& normalize() {
+        T magnitude = this->magnitude();
+        if (magnitude > 0) {
+            (*this) *= ((T)1 / magnitude);
+        }
+        return *this;
+    }
 };
 
-bool solveQuadratic(const float &a, const float &b, const float &c, float &x0, float &x1) {
+typedef Vector3<float> Vector3f;
+
+bool solve_quadratic(const float &a, const float &b, const float &c, float &x0, float &x1) {
     float discr = b * b - 4 * a * c;
     // case 1: no solutions
     if (discr < 0)
@@ -49,8 +64,6 @@ bool solveQuadratic(const float &a, const float &b, const float &c, float &x0, f
     return true;
 }
 
-typedef Vector3<float> Vector3f;
-
 class Sphere {
 public:
     Vector3f center;
@@ -68,7 +81,7 @@ public:
         float c = l.dot(l) - radius * radius;
         
         float x0, x1;
-        if (!solveQuadratic(a, b, c, x0, x1)) return false;
+        if (!solve_quadratic(a, b, c, x0, x1)) return false;
         if (x0 < 0) {
             x0 = x1;
             if (x0 < 0) return false;
@@ -79,94 +92,87 @@ public:
     }
 };
 
-Vector3f trace() {
-    
+float deg2rad(float deg) {
+    return deg * M_PI / 180;
 }
 
-void render() {
-    
-}
-
-int main(int, char const**)
-{
-    Sphere sphere = Sphere(Vector3<float>(0), 100, Vector3<float>(0, 0, 0));
-    Vector3<float> ray_origin = Vector3<float>(-200, 0, 0);
-    Vector3<float> ray_dir = Vector3<float>(1, 0, 0);
-    float t = 0;
-    bool hit = sphere.intersect(ray_origin, ray_dir, t);
-    float x = ray_origin.x + ray_dir.x * t;
-    float y = ray_origin.y + ray_dir.y * t;
-    float z = ray_origin.z + ray_dir.z * t;
-    
-    if (hit)
-        cout << "The ray intersects the sphere at x = " + to_string(x) + ", y = " + to_string(y) + ", z = " + to_string(z);
-    else cout << "The ray does not intersect the sphere.";
-    
-    // print checkerboard to .png
-    int width = 200;
-    int height = 200;
-    std::vector<unsigned char> image;
-    for (int row = 0; row < width; row++) {
-        for (int col = 0; col < height; col++) {
-            if ((row % 20 < 10 && col % 20 < 10) || (row % 20 >= 10 && col % 20 >= 10)) {
-                image.push_back((unsigned char)0); // r
-                image.push_back((unsigned char)0); // g
-                image.push_back((unsigned char)0); // b
-                image.push_back((unsigned char)255); // a
+void render(vector<Sphere> &spheres, int width, int height, vector<unsigned char> &image) {
+    // for each pixel
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            // construct primary ray
+            Vector3f prim_ray_orig = Vector3f(0);
+            Vector3f prim_ray_dir = Vector3f(col, row, -1) - prim_ray_orig;
+            prim_ray_dir.normalize();
+            
+            // cast the ray and trace it back and loop thru all the objects
+            float min_dist = INFINITY;
+            const Sphere* sphere = NULL;
+            float t;
+            for (int i = 0; i < spheres.size(); i++) {
+                // test for intersection, find min distance
+                if (spheres[i].intersect(prim_ray_orig, prim_ray_dir, t)) {
+                    if (t < min_dist) {
+                        min_dist = t;
+                        sphere = &spheres[i];
+                    }
+                }
+            }
+            
+            // if there is an object, compute color
+            if (!sphere) {
+                image[row * width * 4 + col * 4] = 0; // r
+                image[row * width * 4 + col * 4 + 1] = 0; // g
+                image[row * width * 4 + col * 4 + 2] = 0; // b
+                image[row * width * 4 + col * 4 + 3] = 255; // a
             }
             else {
-                image.push_back((unsigned char)255); // r
-                image.push_back((unsigned char)255); // g
-                image.push_back((unsigned char)255); // b
-                image.push_back((unsigned char)255); // a
+                Vector3f hit_point = prim_ray_orig + prim_ray_dir * t;
+                Vector3f hit_normal = hit_point - sphere->center;
+                hit_normal.normalize();
+                
+                Vector3f light = Vector3f(-100, -100, 0);
+                float light_dist = (light - hit_point).magnitude();
+                float light_dist2 = light_dist * light_dist;
+                float brightness = 10000000 / light_dist2;
+                
+                // figure out if there's a shadow
+                
+                // add to image[]
+                image[row * width * 4 + col * 4] = sphere->color.x * brightness; // r
+                image[row * width * 4 + col * 4 + 1] = sphere->color.y * brightness; // g
+                image[row * width * 4 + col * 4 + 2] = sphere->color.z * brightness; // b
+                image[row * width * 4 + col * 4 + 3] = 255; // a
             }
         }
     }
+}
+
+int main()
+{
+    // fill up list with random spheres
+    vector<Sphere> spheres;
+    /* int num_spheres = 20;
+    srand(time(NULL));
+    for (int i = 0; i < num_spheres; i++) {
+        float x = rand() % 1000;
+        float y = rand() % 1000;
+        float z = rand() % 1000;
+        float radius = rand() % 100 + 10;
+        spheres.push_back(Sphere(Vector3f(x, y, z), radius, Vector3f(178, 166, 255)));
+    } */
+    spheres.push_back(Sphere(Vector3f(100, 100, -3), 10, Vector3f(255, 0, 0)));
     
+    // render them
+    int width = 800;
+    int height = 600;
+    vector<unsigned char> image;
+    image.resize(width * height * 4);
+    render(spheres, width, height, image);
+    
+    // save pixels to .png
     unsigned error = lodepng::encode("img.png", image, width, height);
-    
-    // if there's an error, display it
-    if(error) std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
+    if(error) cout << "encoder error " << error << ": "<< lodepng_error_text(error) << endl;
     
     return 0;
-
-    /*
-    for (int j = 0; j < imageHeight; ++j) {
-        for (int i = 0; i < imageWidth; ++i) {
-            // compute primary ray direction
-            Ray primRay;
-            computePrimRay(i, j, &primRay);
-            // shoot prim ray in the scene and search for intersection
-            Point pHit;
-            Normal nHit;
-            float minDist = INFINITY;
-            Object object = NULL;
-            for (int k = 0; k < objects.size(); ++k) {
-                if (Intersect(objects[k], primRay, &pHit, &nHit)) {
-                    float distance = Distance(eyePosition, pHit);
-                    if (distance < minDistance) {
-                        object = objects[k];
-                        minDistance = distance; // update min distance
-                    }
-                }
-            }
-            if (object != NULL) {
-                // compute illumination
-                Ray shadowRay;
-                shadowRay.direction = lightPosition - pHit;
-                bool isShadow = false;
-                for (int k = 0; k < objects.size(); ++k) {
-                    if (Intersect(objects[k], shadowRay)) {
-                        isInShadow = true;
-                        break;
-                    }
-                }
-            }
-            if (!isInShadow)
-                pixels[i][j] = object->color * light.brightness; 
-            else 
-                pixels[i][j] = 0;
-        } 
-    }
-     */
 }
